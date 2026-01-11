@@ -1,0 +1,47 @@
+# ===============================
+# 0) SYSTEM PREREQS (TERMUX SAFE)
+# ===============================
+pkg update -y && pkg install -y nodejs git
+npm i -g firebase-tools
+
+# ===============================
+# 1) FRESH PROJECT STATE
+# ===============================
+cd ~
+rm -rf Pagearrangent
+git clone https://github.com/figuripv6o/Pagearrangent
+cd Pagearrangent
+
+# ===============================
+# 2) FORCE INIT VITE REACT (NO PROMPTS)
+# ===============================
+npm init vite@latest . -- --template react --yes --force
+
+# ===============================
+# 3) INSTALL + BUILD
+# ===============================
+npm install
+npm run build
+
+# ===============================
+# 4) FIREBASE LOGIN (ONE TIME)
+# ===============================
+firebase login || firebase login --no-localhost
+
+# ===============================
+# 5) FIREBASE HOSTING INIT (AUTO)
+# ===============================
+cat > firebase.json <<'EOF'
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+  }
+}
+EOF
+
+# ===============================
+# 6) DEPLOY
+# ===============================
+firebase deploy
